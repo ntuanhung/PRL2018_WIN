@@ -1,27 +1,27 @@
 # PRL2018_WIN
 ## Overview
-- This repository contains source code of the paper "Text-Independent Writer Identification using Convolutional Neural Network".
+This repository contains source code of the paper "Text-Independent Writer Identification using Convolutional Neural Network".
 Read paper [here](https://www.sciencedirect.com/science/article/pii/S0167865518303180)
 
-- If you want to refer to our paper, please use citation as follows:
+If you want to refer to our paper, please use citation as follows:
 
 Hung Tuan Nguyen, Cuong Tuan Nguyen, Takeya Ino, Bipin Indurkhya, Masaki Nakagawa,
 *Text-independent writer identification using convolutional neural network*,
 Pattern Recognition Letters, 2018, ISSN 0167-8655, https://doi.org/10.1016/j.patrec.2018.07.022.
 
 ## Notes
-- Inside *images* folder, all image file should be named by <writer_id>_<image_name> such as 0_1234.
+We developed and evaluated our source code on Tensorflow 1.7.0.
 
-- In *configs* folder, there are different configuration files which are used to train/evaluate model.
+Inside *images* folder, all image file should be named by <writer_id>_<image_name> such as 0_1234.
+
+In *configs* folder, there are different configuration files which are used to train/evaluate model.
 Each configuration has three text files for train/valid/test sets.
-
 ```
 train-files_<number_of_writers>users_<number_of_patterns_per_writer>patPerUser_SAME_<database_name>.txt
 valid-files_<number_of_writers>users_<number_of_patterns_per_writer>patPerUser_SAME_<database_name>.txt
  test-files_<number_of_writers>users_<number_of_patterns_per_writer>patPerUser_SAME_<database_name>.txt
 ```
-
-- Each configuration file has <number_of_writers> lines. For every line, the first value is <writer_id> which is followed by <number_of_patterns_per_writer> values represented for <image_name>.
+Each configuration file has <number_of_writers> lines. For every line, the first value is <writer_id> which is followed by <number_of_patterns_per_writer> values represented for <image_name>.
 
 ## Train model
 Run the following command to train network
