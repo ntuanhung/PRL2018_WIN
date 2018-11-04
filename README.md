@@ -1,7 +1,7 @@
 # PRL2018_WIN
 ## Overview
 This repository contains source code of the paper "Text-Independent Writer Identification using Convolutional Neural Network".
-Read paper [here](https://www.sciencedirect.com/science/article/pii/S0167865518303180)
+Read paper [here](https://www.sciencedirect.com/science/article/pii/S0167865518303180).
 
 If you want to refer to our paper, please use citation as follows:
 
