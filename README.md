@@ -9,6 +9,8 @@ Hung Tuan Nguyen, Cuong Tuan Nguyen, Takeya Ino, Bipin Indurkhya, Masaki Nakagaw
 *Text-independent writer identification using convolutional neural network*,
 Pattern Recognition Letters, 2018, ISSN 0167-8655, https://doi.org/10.1016/j.patrec.2018.07.022.
 
+For questions or more details, please contact us via email addresses: <ntuanhung@gmail.com> or nakagawa (at) cc.tuat.ac.jp
+
 ## Prerequisites
 Install the following packages via pip3: numpy, tqdm, Pillow, pickle, gzip, scipy, tensorflow-gpu
 
