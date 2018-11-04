@@ -17,7 +17,7 @@ Install the following packages via pip3: numpy, tqdm, Pillow, pickle, gzip, scip
 We developed and evaluated our source code on Tensorflow 1.7.0 with Python 3.6.5.
 
 ## Notes
-Inside *images* folder, all image file should be named by <writer_id>_<image_name> such as 0_1234.
+Inside *images* folder, all image file should be named by <writer_id>_<image_name> such as 0_1234. All images should be resized to squared and unique size, for example, *64-by-64*.
 
 In *configs* folder, there are different configuration files which are used to train/evaluate model.
 Each configuration has three text files for train/valid/test sets.
