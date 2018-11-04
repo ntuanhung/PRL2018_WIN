@@ -7,4 +7,4 @@ This database has Dataset A and Dataset B, containing handwritten samples from 4
 In our experiments, we used Kanji character patterns only from the writers in the Dataset A.
 There are 3,306 handwritten samples per writer. 
 
-Please contact the authors of [JEITA-HP](https://ieeexplore.ieee.org/document/711940) for access this database.
+Please contact the authors of [JEITA-HP](https://ieeexplore.ieee.org/document/711940) to access this database.
