@@ -1,14 +1,14 @@
-import tensorflow as tf
-import numpy as np
-import os
-from tqdm import tqdm
-import logging
-from datetime import datetime
 import argparse
+from datetime import datetime
+import logging
+import os
+import time
+
+import numpy as np
+import tensorflow as tf
+from tqdm import tqdm
 import WIN5_SUBIMG
 from imageData import ImageData
-# from const import *
-import time
 
 def addDest2Logger(logger, prefix):
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -94,12 +94,6 @@ if __name__ == "__main__":
     parser.add_argument('--use_valid_data', '-uvd', type=str2bool, default=True)
     parser.add_argument('--use_test_data', '-utd', type=str2bool, default=True)
     parser.add_argument('--eval_test_data', '-etd', type=str2bool, default=True)
-    
-    # parser.add_argument('--out', '-o', default='result',
-                        # help='Output directory')
-    # parser.add_argument('--seed', '-s', type=int, default=0)
-    # parser.add_argument('--step_size', '-ss', type=int, default=50000)
-    # parser.add_argument('--iteration', '-i', type=int, default=70000)
     
     args = parser.parse_args()
     
@@ -189,27 +183,11 @@ if __name__ == "__main__":
     loss = WIN5_SUBIMG.loss(y_conv, y_, mode="cross_entropy")
     train_step = WIN5_SUBIMG.train_op(loss, global_step, args.lr)
     regul_loss = tf.get_collection('regul_loss')[0]
-    # triplet_loss = tf.get_collection('triplet_loss')[0]
-    # same_loss = tf.get_collection('triplet_loss')[1]
-    # different_loss = tf.get_collection('triplet_loss')[2]
-    #total_loss = tf.get_collection('total_loss')[0]
-    #learning_rate = tf.get_collection('learning_rate')[0]
-    #train_step = tf.get_collection('train_step')[0]
-    # keep_prob_fc = tf.get_collection('keep_prob_fc')[0]
-
-    # x = tf.get_collection('x')[0]
-    # y_ = tf.get_collection('y_')[0]
-
-    # y_conv = tf.get_collection('y_out')[0]
-    # is_training = tf.get_collection('is_training')[0]
-
     correct_prediction = tf.equal(tf.arg_max(y_conv, 1), tf.arg_max(y_, 1))
     true_pred = tf.reduce_sum(tf.cast(correct_prediction, dtype=tf.float32))
 
     correct_prediction_top5 = tf.nn.in_top_k(y_conv, tf.cast(tf.argmax(y_, 1), "int32"), 5)
     true_pred_top5 = tf.reduce_sum(tf.cast(correct_prediction_top5, dtype=tf.float32))
-
-    # en_free_all, en_copied_all, en_free_valid, en_free_test = PrepareData()
 
     ## VARIABLES
     best_valid_acc = 0
@@ -222,7 +200,6 @@ if __name__ == "__main__":
     sess.run(tf.global_variables_initializer())
     if args.resume!="none":
         try:
-            #saver.restore(sess, MODEL_PATH + '-' + str(global_step_init))
             bestAcc_saver.restore(sess, args.resume+"_bestAcc.ckpt"+ '-' + str(args.global_step_start))
             logger.info("Resuming training process with "+args.resume+"_bestAcc.ckpt"+ '-' + str(args.global_step_start)+" model restored.")
         except:
@@ -244,44 +221,20 @@ if __name__ == "__main__":
             pbar = tqdm(total=train_num_permutations * len(range(train_data.images_idx.shape[1] // train_data.n_tuple)))
             for p_perm in range(train_num_permutations):
                 train_data.shuffleImages()
-                # print("train_data.images_idx.shape[1], train_data.n_tuple", train_data.images_idx.shape[1], train_data.n_tuple)
                 for start_image_index in range(train_data.images_idx.shape[1] // train_data.n_tuple):
                     train_data.shuffleWriter()
-                    #nb_of_writer_batch = len(train_data.writer_index) // writer_per_batch
-                    #batch_idx = 0
-                    for batch_data in train_data.generate_minibatch_JEITA(writer_per_batch, start_image_index * train_data.n_tuple, mode = "train", logger=logger):
-                     ## shuffle the order of writers in training data
-                        #for i in range(nb_of_writer_batch):
-                            # batch_idx += 1
-                            # print('Training on batch ',str(batch_idx),', ',str(start_image_index), '/',str(nb_of_writer_batch))
-                            # print('Training on batch ',str(batch_idx),', ',str(start_image_index), '/',str(nb_of_writer_batch), end = '\r')
-                            # top = i * batch_size
-                            # bot = min((i+1) * batch_size,len(train_image))
-                        
+                    for batch_data in train_data.generate_minibatch_JEITA(writer_per_batch, start_image_index * train_data.n_tuple, mode = "train", logger=logger):                        
                         x_batch, y_batch = batch_data[0], batch_data[1]
-                        #print(y_batch)
                         num_samples_train += x_batch.shape[0]
-                        
-                        #triplet, rgl, ttl, sl, dl, _ = sess.run(# [triplet_loss, regul_loss, total_loss, same_loss, different_loss, train_step],
                         rgl, ttl, _, tr_pred  = sess.run([regul_loss, loss, train_step, true_pred], feed_dict= {x: x_batch, y_: y_batch})
-                        #, is_training:True , keep_prob_fc: 0.8})
                         avg_rgl.append(rgl)
                         avg_ttl.append(ttl) #cross_entropy_loss
                         nb_true_pred_train += tr_pred
-                        # avg_triplet.append(triplet)
-                        # avg_same.append(sl)
-                        # avg_diff.append(dl)
-                        # yconv_vect = y_conv.eval(session=sess, feed_dict= {x: x_batch, y_: y_batch, is_training:True, keep_prob_fc: 0.5})
-                        # print(yconv_vect)
-                        # nb_true_pred += true_pred.eval(session=sess, feed_dict= {x: x_batch, y_: y_batch, is_training:True, keep_prob_fc: 0.8})
                     pbar.update(1)
             pbar.close()
             
             sum_rgl = np.average(avg_rgl)
             sum_ttl = np.average(avg_ttl)
-            # sum_triplet = np.average(avg_triplet)
-            # sum_same = np.average(avg_same)
-            # sum_diff = np.average(avg_diff)
             train_accuracy = nb_true_pred_train * 1.0 / num_samples_train
             if (epoch != 0):
                 latest_saver.save(sess, model_filename+"_last.ckpt", global_step=epoch)
@@ -299,15 +252,10 @@ if __name__ == "__main__":
                     nb_true_pred = 0
                     valid_data.shuffleImages()
                     for start_image_index in range(valid_data.images_idx.shape[1] // valid_data.n_tuple):                    
-                        # nb_of_writer_batch = len(valid_data.writer_index) // writer_per_batch
-                        # batch_idx = 0
                         valid_data.shuffleWriter()
                         for batch_data in valid_data.generate_minibatch_JEITA(writer_per_batch, start_image_index * valid_data.n_tuple, mode = "valid", logger=logger):
-                            # batch_idx += 1
-                            #print('Test on batch ',str(batch_idx),', ',str(start_image_index), '/',str(nb_of_writer_batch), end="\r")
                             x_batch = batch_data[0]
                             y_batch = batch_data[1]
-                            
                             num_samples += x_batch.shape[0]
                             nb_true_pred += true_pred.eval(session=sess, feed_dict={x: x_batch, y_: y_batch}) #, is_training: False, keep_prob_fc: 1.0})
                         pbar.update(1)
@@ -315,9 +263,7 @@ if __name__ == "__main__":
                 pbar.close()
                 avg_valid_acc = np.average(np.array(valid_acc))
                 std_valid_acc = np.std(np.array(valid_acc))
-                # print('Valid accuracy: %.5f with std=%.5f'%( avg_valid_acc*100, std_valid_acc*100))
                 if avg_valid_acc > best_valid_acc:
-                    # print("Network with best accuracy")
                     best_valid_acc = avg_valid_acc
                     best_val_loss_epoch = epoch
                     noBestEpochs = 0
@@ -334,12 +280,8 @@ if __name__ == "__main__":
                     num_samples = 0
                     test_data.shuffleImages()
                     for start_image_index in range(test_data.images_idx.shape[1]//test_data.n_tuple):                    
-                        #nb_of_writer_batch = len(test_data.writer_index) // writer_per_batch
-                        #batch_idx = 0
                         test_data.shuffleWriter()
                         for batch_data in test_data.generate_minibatch_JEITA(writer_per_batch, start_image_index*test_data.n_tuple, mode = "test", logger=logger):
-                            #batch_idx += 1
-                            #print('Test on batch ',str(batch_idx),', ',str(start_image_index), '/',str(nb_of_writer_batch), end="\r")
                             x_batch, y_batch = batch_data[0], batch_data[1]
                             num_samples += x_batch.shape[0]
                             nb_true_pred += true_pred.eval(session=sess, feed_dict={x: x_batch, y_: y_batch})#, is_training: False, keep_prob_fc: 1.0})
@@ -352,10 +294,7 @@ if __name__ == "__main__":
             end_time = time.clock()
             logger.info('training time  = ' + str(end_time - start_time)[0:10] + ' sec(s)')
             logger.info(str(train_accuracy)+ ' ' + str(nb_true_pred_train) + '/' + str(num_samples_train))
-            # if nb_true_pred > num_samples:
-            # print(train_accuracy, nb_true_pred, num_samples)
             logger.info('Total loss: ' + str(sum_ttl) + '. L2-loss: ' + str(sum_rgl))
-            # print('Triplet-loss: ' + str(sum_triplet) + '. Same loss: ' + str(sum_same) + '. Different loss: ' + str(sum_diff))
             logger.info('Train accuracy: %.3f%%'%(train_accuracy * 100))
             
             if len(valid_acc)>0:
@@ -394,9 +333,7 @@ if __name__ == "__main__":
             global_step = args.global_step_eval
             model_name = args.model_name
         try:
-            #saver.restore(sess, MODEL_PATH + '-' + str(global_step_init))
             bestAcc_saver.restore(sess, model_name+"_bestAcc.ckpt"+ '-' + str(global_step))
-            #logger.info(model_name+"_bestAcc.ckpt"+ '-' + str(global_step)+" model restored.")
         except:
             logger.info ('warning')
         
@@ -412,10 +349,9 @@ if __name__ == "__main__":
                 test_data.shuffleWriter()
                 for batch_data in test_data.generate_minibatch_JEITA(writer_per_batch, start_image_index, mode = "eval", logger=logger):
                     batch_idx += 1
-                    #print('Test on batch ',str(batch_idx),', ',str(start_image_index), '/',str(nb_of_writer_batch), end="\r")
                     x_batch, y_batch = batch_data[0], batch_data[1]
                     num_samples += x_batch.shape[0]
-                    nb_true_pred += true_pred.eval(session=sess, feed_dict={x: x_batch, y_: y_batch})#, is_training: False, keep_prob_fc: 1.0})
+                    nb_true_pred += true_pred.eval(session=sess, feed_dict={x: x_batch, y_: y_batch})
                 pbar.update(1)
             eval_acc.append(nb_true_pred*1.0/num_samples)
         pbar.close()
