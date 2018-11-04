@@ -9,9 +9,12 @@ Hung Tuan Nguyen, Cuong Tuan Nguyen, Takeya Ino, Bipin Indurkhya, Masaki Nakagaw
 *Text-independent writer identification using convolutional neural network*,
 Pattern Recognition Letters, 2018, ISSN 0167-8655, https://doi.org/10.1016/j.patrec.2018.07.022.
 
-## Notes
-We developed and evaluated our source code on Tensorflow 1.7.0.
+## Prerequisites
+Install the following packages via pip3: numpy, tqdm, Pillow, pickle, gzip, scipy, tensorflow-gpu
 
+We developed and evaluated our source code on Tensorflow 1.7.0 with Python 3.6.5.
+
+## Notes
 Inside *images* folder, all image file should be named by <writer_id>_<image_name> such as 0_1234.
 
 In *configs* folder, there are different configuration files which are used to train/evaluate model.
