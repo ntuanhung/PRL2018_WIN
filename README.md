@@ -15,11 +15,11 @@ Pattern Recognition Letters, 2018, ISSN 0167-8655, https://doi.org/10.1016/j.pat
 - In *configs* folder, there are different configuration files which are used to train/evaluate model.
 Each configuration has three text files for train/valid/test sets.
 
+```
 train-files_<number_of_writers>users_<number_of_patterns_per_writer>patPerUser_SAME_<database_name>.txt
-
 valid-files_<number_of_writers>users_<number_of_patterns_per_writer>patPerUser_SAME_<database_name>.txt
-
  test-files_<number_of_writers>users_<number_of_patterns_per_writer>patPerUser_SAME_<database_name>.txt
+```
 
 - Each configuration file has <number_of_writers> lines. For every line, the first value is <writer_id> which is followed by <number_of_patterns_per_writer> values represented for <image_name>.
 
